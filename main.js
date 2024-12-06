@@ -4,9 +4,8 @@ let locationLog = [];
 // ログを表示
 function updateLogDisplay() {
   const logContainer = document.getElementById('log');
-  const now = new Date()
   logContainer.innerHTML = locationLog
-    .map((loc, idx) => `#${idx + 1}: 時刻 ${now.toISOString()}, 緯度 ${loc.latitude.toPrecision(5)}, 経度 ${loc.longitude.toPrecision(5)}`)
+    .map((loc, idx) => `#${idx + 1}: 時刻 ${loc.timestamp}, 緯度 ${loc.latitude.toPrecision(5)}, 経度 ${loc.longitude.toPrecision(5)}`)
     .join('<br>');
 }
 
