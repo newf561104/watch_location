@@ -1,12 +1,22 @@
-// Service Worker登録
+let watchId = null;
+let locationLog = [];
+
+// ログを表示
+function updateLogDisplay() {
+  const logContainer = document.getElementById('log');
+  logContainer.innerHTML = locationLog
+    .map((loc, idx) => `#${idx + 1}: 緯度 ${loc.latitude}, 経度 ${loc.longitude}`)
+    .join('<br>');
+}
+
+// サービスワーカー登録
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
     .then(() => console.log('Service Workerが登録されました'))
-    .catch(error => console.error('Service Workerの登録に失敗:', error));
+    .catch((err) => console.error('Service Worker登録エラー:', err));
 }
 
-// 位置情報追跡の開始
-let watchId = null;
+// 追跡開始
 document.getElementById('start-tracking').addEventListener('click', () => {
   if ('geolocation' in navigator) {
     watchId = navigator.geolocation.watchPosition(
@@ -16,23 +26,23 @@ document.getElementById('start-tracking').addEventListener('click', () => {
           longitude: position.coords.longitude,
           timestamp: position.timestamp,
         };
+        locationLog.push(data);
+        updateLogDisplay();
 
-        // Service Workerに位置情報を送信
+        // サービスワーカーへ送信
         if (navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage(data);
         }
       },
-      (error) => console.error('位置情報の取得に失敗:', error),
-      {
-        enableHighAccuracy: true,
-      }
+      (error) => console.error('位置情報取得エラー:', error),
+      { enableHighAccuracy: true }
     );
   } else {
-    console.error('Geolocationはサポートされていません');
+    console.error('Geolocation APIはサポートされていません');
   }
 });
 
-// 位置情報追跡の停止
+// 追跡停止
 document.getElementById('stop-tracking').addEventListener('click', () => {
   if (watchId !== null) {
     navigator.geolocation.clearWatch(watchId);
