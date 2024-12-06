@@ -5,7 +5,7 @@ let locationLog = [];
 function updateLogDisplay() {
   const logContainer = document.getElementById('log');
   logContainer.innerHTML = locationLog
-    .map((loc, idx) => `#${idx + 1}: 緯度 ${loc.latitude}, 経度 ${loc.longitude}`)
+    .map((loc, idx) => `#${idx + 1}: 時刻 ${new Date()}, 緯度 ${loc.latitude.toPrecision(5)}, 経度 ${loc.longitude.toPrecision(5)}`)
     .join('<br>');
 }
 
